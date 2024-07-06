@@ -1,4 +1,4 @@
-### 项目简介
+# 简介(Chatgpt写的)
 
 这个项目展示了一个使用 MPI（消息传递接口）进行并行计算的示例程序。项目通过 Docker 容器来配置和运行多个 MPI 进程，利用 OpenMPI 库进行通信和计算。本项目主要实现了一个并行的排序算法，并测量了整个过程中各个阶段的时间消耗。
 
@@ -9,7 +9,7 @@
 
 ### 环境搭建
 
-- `docker-compose.yml`：Docker Compose 文件，用于定义和配置多个 MPI 容器。
+- `docker-compose.yml`：Docker Compose 文件，用于定义和配置多个 MPI 容器。**具体和核心数，volume挂载，容器节点数需要再做调整。**
 - `Dockerfile`：用于构建 MPI 容器的 Docker 镜像。
 - `sshd_config` 和 `sshfiles`：用于配置 SSH 服务，以支持 MPI 进程间的通信。
 
@@ -27,7 +27,7 @@
     ```bash
     docker-compose up -d
     ```
-4. 进入 `mpi9` 容器并切换到 `mpiuser` 用户，然后测试 SSH 连接到其他容器。这个步骤确保所有节点之间可以通过 SSH 免密登录。如果无法完成这一步，不要进入下一步：
+4. 进入 `mpi9` 容器 **（具体是什么自己要改）** 并切换到 `mpiuser` 用户，然后测试 SSH 连接到其他容器。这个步骤确保所有节点之间可以通过 SSH 免密登录。如果无法完成这一步，不要进入下一步：
     ```bash
     # 进入 mpi9 容器
     user@hostmachine:$ docker exec -it mpi9 /bin/bash
