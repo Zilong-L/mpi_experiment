@@ -110,6 +110,10 @@ int main(int argc, char** argv) {
         cout<<"Hello from rank 0, your program started successfully!"<<endl;
         auto start = chrono::high_resolution_clock::now();
         data = read_floats_from_file(filename);
+        if(data.empty()){
+            cout<<"Data is empty!"<<endl;
+            return 1;
+        }
         auto end = chrono::high_resolution_clock::now();
         chrono::duration<double> fill_time = end - start;
         // fill_random(data,42);
@@ -126,7 +130,15 @@ int main(int argc, char** argv) {
     vector<float> recv_data(num_elements_per_proc,0);
     // Scatter数据到所有进程
 
+    chrono::duration<double> total_time(0);
+    chrono::duration<double> scatter_time(0);
+    chrono::duration<double> exchange_time(0);
+    chrono::duration<double> gather_time(0);
+    chrono::duration<double> communication_time(0);
+
+
     auto start = chrono::high_resolution_clock::now();
+    auto scatter_start = chrono::high_resolution_clock::now();
     if(world_rank == 0){
         cout<<"start scatter data!"<<endl;
     }
@@ -134,6 +146,7 @@ int main(int argc, char** argv) {
     if(world_rank == 0){
         cout<<"local sort!"<<endl;
     }
+    scatter_time = chrono::high_resolution_clock::now() - scatter_start;
     sort(sub_data.begin(), sub_data.end());
 
     vector<int> even_neighbor_choice = {1,-1};
@@ -146,26 +159,28 @@ int main(int argc, char** argv) {
     }
     for(int i = 0;i < world_size - 1;i++){
         // exchange data in each loop
-        if(world_rank == 0){
-            cout<< "Round "<<i<<endl;
-        }
         auto is_odd_cycle = i % 2;
         if (is_odd_cycle){
             if(world_rank == 0 || world_rank == world_size - 1){
                 continue;
             }
+            auto comu_start = chrono::high_resolution_clock::now();
             MPI_Sendrecv(sub_data.data(), num_elements_per_proc, MPI_FLOAT, odd_neighbor, 0,
                          recv_data.data(), num_elements_per_proc, MPI_FLOAT, odd_neighbor, 0,
                          MPI_COMM_WORLD, &status); 
+            exchange_time += chrono::high_resolution_clock::now() - comu_start;
+            
             if(world_rank % 2 == 0){
                 MergeHigh(sub_data,recv_data);
             } else{
                 MergeLow(sub_data,recv_data);
             }
         } else{
+            auto comu_start = chrono::high_resolution_clock::now();
             MPI_Sendrecv(sub_data.data(), num_elements_per_proc, MPI_FLOAT, even_neighbor, 0,
                          recv_data.data(), num_elements_per_proc, MPI_FLOAT, even_neighbor, 0,
                          MPI_COMM_WORLD, &status);
+            exchange_time += chrono::high_resolution_clock::now() - comu_start;
             if(world_rank % 2 == 0){
                 MergeLow(sub_data,recv_data);
             } else{
@@ -175,20 +190,31 @@ int main(int argc, char** argv) {
     }
 
     // Gather the sorted data
-    cout<<"Try Gather!!!!";
+    if(world_rank == 0){
+        cout<<"Try Gather!";
+    }
+    auto gather_start = chrono::high_resolution_clock::now();
     MPI_Gather(sub_data.data(), num_elements_per_proc, MPI_FLOAT, data.data(), num_elements_per_proc, MPI_FLOAT, 0, MPI_COMM_WORLD);
     auto end = chrono::high_resolution_clock::now();
-    chrono::duration<double> fill_time = end - start;
+    gather_time = end - gather_start;
+    communication_time = gather_time + exchange_time + scatter_time;
+    total_time = end - start;
     if(world_rank == 0){
         //check if the data is sorted
-        for(int i = 0;i<data.size()-1;i++){
+        for(size_t i = 0;i < data.size()-1 ;i++){
             if(data[i] > data[i+1]){
                 cout<<"Data is not sorted!"<<endl;
                 break;
             }
         }
         cout<<"Data is sorted!"<<endl;
-        cout << "Time to sort random numbers: " << fill_time.count() << " seconds" << endl;
+        cout << "Total time: " << total_time.count() << " seconds" << endl;
+        cout << "Scatter time: " << scatter_time.count() << " seconds" << endl;
+        cout << "exchange time: " << exchange_time.count() << " seconds" << endl;
+        cout << "Gather time: " << gather_time.count() << " seconds" << endl;
+        cout << "Communication time: " << communication_time.count() << " seconds" << endl;
+        cout << "Calculation time: "<< total_time.count() - communication_time.count() << " seconds" << endl;
+
     }
 
     MPI_Finalize();
