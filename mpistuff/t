@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <filename> "
+    exit 1
+fi
+
+FILE=$1
+DEST=/home/mpiuser
+
+USER="mpiuser"
+
+NODES=("mpi1" "mpi2" "mpi3" "mpi4" "mpi5" "mpi6" "mpi7" "mpi8")
+for NODE in "${NODES[@]}";do
+    echo "Transferring $FILE to $USER@$NODE:$DEST"
+    scp "$FILE" "$USER@$NODE:$DEST"
+    if [ $? -ne 0 ]; then
+        echo "Failed to transfer $FILE to $NODE"
+    else
+        echo "Successfully transferred $FILE to $NODE"
+    fi
+done

@@ -1,0 +1,49 @@
+Host mpi1
+    IdentityFile ~/.ssh/mpiuser_key
+    Hostname mpi1
+    Port 22
+    User mpiuser
+
+Host mpi2
+    IdentityFile ~/.ssh/mpiuser_key
+    Hostname mpi2
+    Port 22
+    User mpiuser
+
+Host mpi3
+    IdentityFile ~/.ssh/mpiuser_key
+    Hostname mpi3
+    Port 22
+    User mpiuser
+Host mpi4
+    IdentityFile ~/.ssh/mpiuser_key
+    Hostname mpi4
+    Port 22
+    User mpiuser
+Host mpi5
+    IdentityFile ~/.ssh/mpiuser_key
+    Hostname mpi5
+    Port 22
+    User mpiuser
+
+Host mpi6
+    IdentityFile ~/.ssh/mpiuser_key
+    Hostname mpi6
+    Port 22
+    User mpiuser
+
+Host mpi7
+    IdentityFile ~/.ssh/mpiuser_key
+    Hostname mpi7
+    Port 22
+    User mpiuser
+Host mpi8
+    IdentityFile ~/.ssh/mpiuser_key
+    Hostname mpi8
+    Port 22
+    User mpiuser
+Host mpi9
+    IdentityFile ~/.ssh/mpiuser_key
+    Hostname mpi9
+    Port 22
+    User mpiuser

@@ -1,0 +1,48 @@
+
+services:
+  mpi_container_1:
+    container_name: mpi1
+    image: mpi
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+    volumes:
+      - ./mpistuff/executables:/home/mpiuser/executables
+    command: ["/usr/sbin/sshd", "-D"]
+# 创建 8 个副本
+  mpi_container_2:
+    container_name: mpi2
+    extends:
+      service: mpi_container_1
+  mpi_container_3:
+    container_name: mpi3
+    extends:
+      service: mpi_container_1
+  mpi_container_4:
+    container_name: mpi4
+    extends:
+      service: mpi_container_1
+  mpi_container_5:
+    container_name: mpi5
+    extends:
+      service: mpi_container_1
+  mpi_container_6:
+    container_name: mpi6
+    extends:
+      service: mpi_container_1
+  mpi_container_7:
+    container_name: mpi7
+    extends:
+      service: mpi_container_1
+  mpi_container_8:
+    container_name: mpi8
+    extends:
+      service: mpi_container_1
+  mpi_container-big:
+    container_name: mpi9
+    image: mpi
+    volumes:
+      - ./mpistuff:/home/mpiuser/code
+      - ./mpistuff/executables:/home/mpiuser/executables
+    command: ["/usr/sbin/sshd", "-D"]

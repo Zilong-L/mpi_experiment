@@ -1,0 +1,41 @@
+# /etc/ssh/sshd_config
+
+# 使用默认的SSH端口 22，如果需要可以自行更改
+# Port 22
+
+# 使用SSH协议版本2
+Protocol 2
+
+# 使用主机密钥文件
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+
+# 允许root用户登录（谨慎使用）
+PermitRootLogin yes
+
+# 允许使用密码进行认证
+PasswordAuthentication yes
+
+# 允许所有普通用户登录
+AllowUsers *
+
+# 使用PAM进行认证
+UsePAM yes
+
+# SSH会话保持设置
+ClientAliveInterval 300
+ClientAliveCountMax 0
+
+# 日志设置
+SyslogFacility AUTH
+LogLevel INFO
+
+# 允许公钥身份验证
+PubkeyAuthentication yes
+
+# 允许X11转发
+X11Forwarding yes
+
+# TCP保持活动
+TCPKeepAlive yes
